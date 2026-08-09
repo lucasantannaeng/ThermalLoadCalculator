@@ -1,0 +1,34 @@
+# DevSecOps - Environment variables & Secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+.pnpm-store/
+.yarn/
+
+# Build & Dist Outputs
+dist/
+release/
+dist-ssr/
+build/
+out/
+.vite/
+
+# Coverage & Test Outputs
+coverage/
+.vitest/
+
+# Logs & Debug
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# IDEs & System files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

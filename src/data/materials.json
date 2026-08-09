@@ -1,0 +1,18 @@
+{
+  "paredes": [
+    { "id": "alvenaria_leve", "name": "Alvenaria Tijolo Baiano (6 furos - 10cm)", "uFactor": 2.9, "description": "Tijolo cerâmico furado sem isolamento adicional" },
+    { "id": "alvenaria_pesada", "name": "Alvenaria Tijolo Maciço / Bloco Concreto (20cm)", "uFactor": 1.7, "description": "Alvenaria de alta capacidade térmica" },
+    { "id": "drywall_isolado", "name": "Drywall com Lã de Rocha / Lã de Vidro (50mm)", "uFactor": 0.7, "description": "Gesso acartonado com excelente isolamento acústico e térmico" }
+  ],
+  "telhados": [
+    { "id": "laje_simples", "name": "Laje de Concreto Simples (Sem Forro)", "uFactor": 3.5, "description": "Concreto armado sem isolamento adicional" },
+    { "id": "laje_isolada", "name": "Laje de Concreto com EPS / PIR Isolante", "uFactor": 0.8, "description": "Laje com camada de EPS de 50mm" },
+    { "id": "telha_fibro", "name": "Telha de Fibrocimento Simples", "uFactor": 7.0, "description": "Alta transmitância térmica direta" },
+    { "id": "telha_ceram_forro", "name": "Telha Cerâmica com Forro de Gesso / Madeira", "uFactor": 2.5, "description": "Cobertura residencial tradicional" },
+    { "id": "telhado_verde", "name": "Telhado Verde Extensivo (Vegetado)", "uFactor": 1.5, "description": "Camada de substrato vegetal com amortecimento de picos solares" }
+  ],
+  "vidros": [
+    { "id": "simples", "name": "Vidro Simples Transparente (4mm a 6mm)", "uFactor": 5.7, "description": "Janelas e portas convencionais" },
+    { "id": "duplo", "name": "Vidro Duplo Insulado com Câmara de Ar (6+12+6mm)", "uFactor": 2.8, "description": "Vidro insulado com câmara de argônio/ar seco" }
+  ]
+}
