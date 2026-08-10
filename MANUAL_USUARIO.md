@@ -1,6 +1,6 @@
-# Manual do Usuário — Calculadora e Simulação de Carga Térmica HVAC Pro (Multi-Norma 24h)
+# Manual do Usuário — Calculadora e Simulação de Carga Térmica HVAC Pro (v3.6.0 Parametric CAD, Dynamic Databases & Interactive Vector Editor Edition)
 
-> **Versão do Sistema:** 1.0.0 Pro Industrial  
+> **Versão do Sistema:** v3.6.0 Parametric CAD, Dynamic Databases & Interactive Vector Editor Edition  
 > **Normas de Referência:** ABNT NBR 16401-1 / NBR 15220 • ASHRAE RTS / CTF • ISO 52016-1  
 > **Documento:** Guia Técnico e Manual de Operação do Usuário  
 
@@ -15,7 +15,7 @@ Diferente de calculadoras simplificadas de "regra de bolso" (como 600 BTU/m²), 
 ```
        +-----------------------------------------------------------------------+
        |                         HVAC THERMAL LOAD PRO                         |
-       |                     Engine Simulação Física 24h                       |
+       |               Engine Simulação Física 24h & Vector CAD 2D             |
        +-----------------------------------------------------------------------+
            |                               |                               |
            v                               v                               v
@@ -28,6 +28,7 @@ Diferente de calculadoras simplificadas de "regra de bolso" (como 600 BTU/m²), 
                                            |
                                            v
                         +-------------------------------------+
+                        | - Editor Vetorial 2D & Snapping     |
                         | - Gráfico Interativo Recharts 24h   |
                         | - Gestão de Materiais U (Local API) |
                         | - Laudo Técnico PDF com ART CREA    |
@@ -35,6 +36,7 @@ Diferente de calculadoras simplificadas de "regra de bolso" (como 600 BTU/m²), 
 ```
 
 ### Principais Funcionalidades:
+- **Editor Vetorial Interativo 2D & Desenho Paramétrico:** Canvas interativo com snapping de nós/grade, snap em parede com projeção ortogonal e sincronização bidirecional em tempo real.
 - **Motores Multi-Norma em Tempo Real:** Alterne dinamicamente entre **ABNT NBR 16401**, **ASHRAE RTS** e **ISO 52016-1**.
 - **Simulação Térmica 24 Horas:** Visualização gráfica acumulada dos ganhos de calor hora a hora (00:00h às 23:00h) com identificação automática do horário de pico.
 - **Zonas Bioclimáticas Brasileiras (NBR 15220):** Mapeamento completo das 8 Zonas Bioclimáticas com $\Delta T$ ajustado para diversas capitais brasileiras.
@@ -160,6 +162,53 @@ Clique no botão **Materiais U** na barra superior ou na caixa de ferramentas pa
 4. **Memória de Cálculo Detalhada (Tabela 2):** Discriminação componente por componente (Infiltração, Pessoas, Iluminação, Equipamentos, Telhado, Paredes, Janelas) com carga em BTU/h, equivalente em kW e percentual de participação na carga pico.
 5. **Perfil Térmico Gráfico 24 Horas:** Gráfico vetorial nativo impresso diretamente na página do PDF com 24 barras verticais e destaque em cyan para a hora de pico.
 6. **Parecer e Aviso Legal de Responsabilidade Técnica (CREA / CONFEA):** Caixa de destaque normativo com campos para assinatura e número de registro do Engenheiro Mecânico Responsável e número da **ART** (*Anotação de Responsabilidade Técnica*).
+
+---
+
+### 4.7 Passo 7: Importação de Plantas Baixas CAD (DXF / SVG) e Modal CadImportModal
+
+O **HVAC Thermal Load Pro** possui um motor avançado de ingestão vetorial de plantas baixas em formatos **DXF (AutoCAD ASCII)** e **SVG (Scalable Vector Graphics)**. Esta funcionalidade permite extrair automaticamente a geometria dos recintos, calcular superfícies e reconhecer orientações solares sem a necessidade de digitação manual de dimensões.
+
+#### A. Padronização Normativa de Layers CAD (Camadas do Desenho)
+Para que o algoritmo de interpretação geométrica processe corretamente o desenho, as entidades vetoriais no projeto CAD (AutoCAD, Revit, QCAD, DraftSight) devem estar organizadas conforme as convenções de camadas a seguir:
+
+| Nome do Layer | Tipo de Entidade Suportada | Função no Parser e Impacto no Cálculo |
+| :--- | :--- | :--- |
+| **`PAREDES`** | `LWPOLYLINE`, `LINE`, `PATH` | Define a geometria perimetral e espessura das paredes de alvenaria ou drywall. O percurso e comprimento de cada segmento são multiplicados pelo pé-direito para obter a área de condução ($m^2$). |
+| **`JANELAS`** | `LINE`, `RECTANGLE`, `PATH` | Define a localização e dimensões de esquadrias e superfícies envidraçadas. O parser calcula a área da janela e associa a orientação da parede adjacente para determinar o fator solar $SHGF$. |
+| **`AMBIENTES`** | `LWPOLYLINE` (Fechada), `TEXT`, `MTEXT` | Define os limites poligonais fechados de cada cômodo/zona. O sistema aplica a **Fórmula de Shoelace** para calcular a área útil exata ($m^2$) do recinto e atribui o nome contido no texto. |
+| **`NORTE`** | `LINE`, `RAY`, `LWPOLYLINE` | Define o vetor de orientação do Norte geográfico em relação à prancha CAD. O ângulo azimutal do vetor reorienta automaticamente as normais de todas as paredes para as 8 direções cardeais/colaterais. |
+
+> [!TIP]
+> **Camadas Customizadas:** Caso o desenho utilize nomes de layers diferentes dos padrões (ex: `ARQ-PAREDE` ou `ESQUADRIAS`), o modal `CadImportModal` permite o remapeamento dinâmico dos layers antes da ingestão final.
+
+#### B. Guia de Uso do Modal `CadImportModal`
+1. **Abertura do Modal:** Na barra de ferramentas principal do simulador, clique no botão **Importar CAD (DXF/SVG)** para abrir a interface modal `CadImportModal`.
+2. **Carregamento do Arquivo:** Arraste e solte o arquivo `.dxf` ou `.svg` na área de upload, ou clique para selecionar no computador.
+3. **Ajuste de Escala Métrica:** Selecione a unidade de medida utilizada no desenho original:
+   - **Milímetros (mm):** Aplica fator de conversão $0.001$ para metros.
+   - **Centímetros (cm):** Aplica fator de conversão $0.01$ para metros.
+   - **Metros (m):** Mantém escala unitária $1.0$.
+4. **Mapeamento de Layers:** Verifique se as camadas do arquivo correspondem às funções de `PAREDES`, `JANELAS`, `AMBIENTES` e `NORTE`. Se necessário, ajuste os seletores suspensos.
+5. **Pré-Visualização e Validação Geométrica:** O painel exibe o desenho 2D reconstruído, destacando os polígonos identificados, as áreas calculadas via fórmula de Shoelace e o vetor de azimute do Norte.
+6. **Confirmação e Injeção no Simulador:** Clique no botão **Importar Ambientes para a Simulação**. Todos os recintos extraídos serão adicionados instantaneamente à árvore do projeto com paredes orientadas e janelas cadastradas.
+
+---
+
+### 4.8 Editor Vetorial Interativo 2D & Ajuste Paramétrico (`HvacVectorCanvasEditor`)
+
+A versão v3.6.0 consolida o **Editor Vetorial Interativo 2D**, uma ferramenta gráfica completa para criação, manipulação e parametrização vetorial de recintos, paredes e aberturas:
+
+1. **Ferramentas de Desenho Vetorial:**
+   - **Desenhar Ambientes (Polígonos/Salas):** Criação gráfica de salas e zonas com determinação automática de área via Fórmula de Shoelace.
+   - **Desenhar Janelas e Esquadrias (Snap em Paredes):** Inserção visual de janelas com alinhamento e projeção ortogonal em relação à parede hospedeira.
+   - **Seleção e Modificação Paramétrica:** Clique para selecionar ambientes ou paredes e editar dimensões, orientações solares e transmitâncias no inspetor.
+2. **Sistema de Snapping Inteligente:**
+   - Snap em grade métrica configurável.
+   - Snap em vértices e nós existentes.
+   - Snap ortogonal em segmentos de parede com projeção matemática.
+3. **Sincronização Bi-Direcional em Tempo Real:**
+   - Alterações efetuadas no canvas 2D refletem-se instantaneamente na árvore de ambientes do projeto e no motor de cálculo térmico 24h.
 
 ---
 

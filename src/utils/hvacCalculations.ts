@@ -61,7 +61,7 @@ export const calculateEnvironmentThermalLoad = (env: HVACEnvironment): HVACResul
   // 5. Cobertura / Telhado
   let telhadoBTU = 0;
   if (env.hasRoof) {
-    const matObj = TELHADO_MATERIAIS[env.roofType];
+    const matObj = (env.customCatalog?.telhados?.find(m => m.id === env.roofType)) || TELHADO_MATERIAIS[env.roofType];
     const U = matObj ? matObj.uFactor : 2.0;
     const cltd = 15;
     telhadoBTU = U * (env.roofArea || area) * cltd * WATT_TO_BTU;
@@ -69,7 +69,7 @@ export const calculateEnvironmentThermalLoad = (env: HVACEnvironment): HVACResul
 
   // 6. Paredes Externas
   const paredesBTU = (env.walls || []).reduce((acc: number, wall: Wall) => {
-    const matObj = PAREDE_MATERIAIS[wall.type];
+    const matObj = (env.customCatalog?.paredes?.find(m => m.id === wall.type)) || PAREDE_MATERIAIS[wall.type];
     const U = matObj ? matObj.uFactor : 2.9;
     const cltd = CLTD_PAREDE[wall.orientation] || 8;
     return acc + (U * (wall.area || 0) * cltd);
@@ -80,7 +80,7 @@ export const calculateEnvironmentThermalLoad = (env: HVACEnvironment): HVACResul
   let janelasSolarWatts = 0;
 
   (env.windows || []).forEach((win: Window) => {
-    const matObj = VIDRO_MATERIAIS[win.glassType];
+    const matObj = (env.customCatalog?.vidros?.find(m => m.id === win.glassType)) || VIDRO_MATERIAIS[win.glassType];
     const U = matObj ? matObj.uFactor : 5.7;
     janelasConducaoWatts += U * (win.area || 0) * deltaT;
     janelasSolarWatts += (win.area || 0) * (SHGF_VIDRO[win.orientation] || 150) * (win.protection || 1.0);

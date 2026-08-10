@@ -11,12 +11,21 @@ export class MaterialService {
     this.loadFromStorage();
   }
 
+  private normalizeCatalog(parsed: any): MaterialCatalog {
+    return {
+      paredes: Array.isArray(parsed?.paredes) ? parsed.paredes : initialMaterials.paredes,
+      telhados: Array.isArray(parsed?.telhados) ? parsed.telhados : initialMaterials.telhados,
+      vidros: Array.isArray(parsed?.vidros) ? parsed.vidros : initialMaterials.vidros,
+    };
+  }
+
   private loadFromStorage(): void {
     if (typeof localStorage !== 'undefined') {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         try {
-          this.catalog = JSON.parse(saved);
+          const parsed = JSON.parse(saved);
+          this.catalog = this.normalizeCatalog(parsed);
         } catch (e) {
           console.error('Failed to parse local materials catalog', e);
         }
@@ -30,9 +39,13 @@ export class MaterialService {
         const res = await fetch('/api/materials');
         if (res.ok) {
           const data = await res.json();
-          this.catalog = data;
+          this.catalog = this.normalizeCatalog(data);
           if (typeof localStorage !== 'undefined') {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(this.catalog));
+            } catch (e) {
+              console.error('Failed to save to localStorage', e);
+            }
           }
         }
       }
@@ -45,7 +58,11 @@ export class MaterialService {
   public async saveCatalog(newCatalog: MaterialCatalog): Promise<boolean> {
     this.catalog = newCatalog;
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newCatalog));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newCatalog));
+      } catch (e) {
+        console.error('Failed to save to localStorage', e);
+      }
     }
     try {
       if (typeof fetch !== 'undefined') {
@@ -63,6 +80,8 @@ export class MaterialService {
   }
 
   public async addMaterial(category: keyof MaterialCatalog, option: MaterialOption): Promise<MaterialCatalog> {
+    if (!option.name || !option.name.trim()) throw new Error('Nome é obrigatório');
+    if (option.uFactor <= 0) throw new Error('Fator U deve ser maior que zero');
     const current = await this.getCatalog();
     const list = current[category] || [];
     current[category] = [...list.filter((m: MaterialOption) => m.id !== option.id), option];

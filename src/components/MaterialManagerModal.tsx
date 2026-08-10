@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { 
   X, 
   Plus, 
@@ -22,7 +22,7 @@ interface MaterialManagerModalProps {
   onCatalogUpdate: () => void;
 }
 
-export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = ({
+export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = React.memo(({
   isOpen,
   onClose,
   onCatalogUpdate
@@ -40,7 +40,7 @@ export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = ({
   const [uFactor, setUFactor] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 
-  const loadCatalog = async () => {
+  const loadCatalog = useCallback(async () => {
     setLoading(true);
     try {
       const data = await defaultMaterialService.getCatalog();
@@ -50,18 +50,27 @@ export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
       loadCatalog();
     }
-  }, [isOpen]);
+  }, [isOpen, loadCatalog]);
 
-  const showToast = (type: 'success' | 'error', text: string) => {
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback((type: 'success' | 'error', text: string) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
     setNotification({ type, text });
-    setTimeout(() => setNotification(null), 3500);
-  };
+    toastTimeoutRef.current = setTimeout(() => setNotification(null), 3500);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    };
+  }, []);
 
   // Filtered materials based on category and search query
   const filteredMaterials = useMemo(() => {
@@ -76,9 +85,7 @@ export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = ({
     );
   }, [catalog, activeCategory, searchQuery]);
 
-  if (!isOpen) return null;
-
-  const handleAddMaterial = async (e: React.FormEvent) => {
+  const handleAddMaterial = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
       showToast('error', 'Por favor, informe o nome do material.');
@@ -115,9 +122,9 @@ export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = ({
     } finally {
       setSaving(false);
     }
-  };
+  }, [name, uFactor, description, formCategory, onCatalogUpdate, showToast]);
 
-  const handleRemoveMaterial = async (category: keyof MaterialCatalog, id: string, matName: string) => {
+  const handleRemoveMaterial = useCallback(async (category: keyof MaterialCatalog, id: string, matName: string) => {
     if (!confirm(`Deseja realmente excluir o material "${matName}"?`)) return;
 
     try {
@@ -128,9 +135,9 @@ export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = ({
     } catch (err) {
       showToast('error', 'Falha ao remover o material.');
     }
-  };
+  }, [onCatalogUpdate, showToast]);
 
-  const handleExportJSON = () => {
+  const handleExportJSON = useCallback(() => {
     const jsonStr = defaultMaterialService.exportToJSON();
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -140,9 +147,9 @@ export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = ({
     a.click();
     URL.revokeObjectURL(url);
     showToast('success', 'Catálogo exportado em formato JSON com sucesso!');
-  };
+  }, [showToast]);
 
-  const handleExportCSV = () => {
+  const handleExportCSV = useCallback(() => {
     const csvStr = defaultMaterialService.exportToCSV();
     const blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -152,13 +159,15 @@ export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = ({
     a.click();
     URL.revokeObjectURL(url);
     showToast('success', 'Catálogo exportado em formato CSV com sucesso!');
-  };
+  }, [showToast]);
 
   const categoryLabels = {
     paredes: 'Paredes & Alvenaria',
     telhados: 'Telhados & Coberturas',
     vidros: 'Vidros & Esquadrias'
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
@@ -171,9 +180,14 @@ export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = ({
               <Layers className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-100 flex items-center gap-2 tracking-tight">
-                Gerenciador do Catálogo de Materiais Térmicos
-              </h2>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-base font-bold text-slate-100 tracking-tight">
+                  Gerenciador do Catálogo de Materiais Térmicos
+                </h2>
+                <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-slate-950 text-cyan-400 border border-cyan-800/80 rounded flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-cyan-400" /> STRIX AUDIT BADGE
+                </span>
+              </div>
               <p className="text-xs text-slate-400">
                 Transmitância Térmica (Fator U em W/m²K) de acordo com a norma ABNT NBR 15220
               </p>
@@ -418,4 +432,7 @@ export const MaterialManagerModal: React.FC<MaterialManagerModalProps> = ({
       </div>
     </div>
   );
-};
+});
+
+MaterialManagerModal.displayName = 'MaterialManagerModal';
+

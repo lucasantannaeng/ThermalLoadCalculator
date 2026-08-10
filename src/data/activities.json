@@ -1,0 +1,83 @@
+[
+  {
+    "id": "residencial_repouso",
+    "name": "Residencial / Repouso (Sentado)",
+    "metabolicRateW": 100,
+    "sensibleFraction": 0.70,
+    "latentFraction": 0.30,
+    "wattsPerSqMeter": 10.0,
+    "description": "Atividade de repouso ou leitura sentado em salas residenciais, quartos e suítes de hotel."
+  },
+  {
+    "id": "escritorio_trabalho_leve",
+    "name": "Escritório - Trabalho Leve (Sentado / Digitação)",
+    "metabolicRateW": 115,
+    "sensibleFraction": 0.65,
+    "latentFraction": 0.35,
+    "wattsPerSqMeter": 15.0,
+    "description": "Trabalho corporativo em escritório, digitação, escrita e reuniões de negócios."
+  },
+  {
+    "id": "comercial_loja_varejo",
+    "name": "Comercial - Loja de Varejo / Atendimento",
+    "metabolicRateW": 140,
+    "sensibleFraction": 0.60,
+    "latentFraction": 0.40,
+    "wattsPerSqMeter": 20.0,
+    "description": "Vendedores e clientes em lojas de departamento, shoppings e farmácias."
+  },
+  {
+    "id": "auditorio_cinema",
+    "name": "Auditório / Cinema / Teatro",
+    "metabolicRateW": 105,
+    "sensibleFraction": 0.70,
+    "latentFraction": 0.30,
+    "wattsPerSqMeter": 12.0,
+    "description": "Público assentado em cinemas, auditórios de palestras e salas de espetáculo."
+  },
+  {
+    "id": "restaurante_refeicao",
+    "name": "Restaurante - Refeição / Atendimento",
+    "metabolicRateW": 150,
+    "sensibleFraction": 0.55,
+    "latentFraction": 0.45,
+    "wattsPerSqMeter": 25.0,
+    "description": "Clientes em almoço/jantar e garçons em circulação contínua em salão de refeição."
+  },
+  {
+    "id": "academia_exercicio_moderado",
+    "name": "Academia - Exercício Moderado",
+    "metabolicRateW": 250,
+    "sensibleFraction": 0.50,
+    "latentFraction": 0.50,
+    "wattsPerSqMeter": 35.0,
+    "description": "Musculação, caminhada na esteira e atividades físicas de intensidade moderada."
+  },
+  {
+    "id": "academia_exercicio_intenso",
+    "name": "Academia - Exercício Intenso / Crossfit",
+    "metabolicRateW": 425,
+    "sensibleFraction": 0.40,
+    "latentFraction": 0.60,
+    "wattsPerSqMeter": 50.0,
+    "description": "Treino funcional de alta intensidade, corrida acelerada e spinning."
+  },
+  {
+    "id": "fabrica_trabalho_bracal",
+    "name": "Fábrica / Trabalho Braçal Leve",
+    "metabolicRateW": 220,
+    "sensibleFraction": 0.55,
+    "latentFraction": 0.45,
+    "wattsPerSqMeter": 30.0,
+    "description": "Operação em pé em linhas de montagem, embalagem e bancadas industriais."
+  },
+  {
+    "id": "cozinha_industrial",
+    "name": "Cozinha Industrial / Preparo Quente",
+    "metabolicRateW": 290,
+    "sensibleFraction": 0.45,
+    "latentFraction": 0.55,
+    "wattsPerSqMeter": 60.0,
+    "description": "Cozinheiros e auxiliares em operação contínua com fornos, fogões e fritadeiras."
+  }
+]

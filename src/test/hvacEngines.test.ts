@@ -93,5 +93,26 @@ describe('HVAC Multi-Standard 24h Engines', () => {
       const defaultModeResult = calculateHVAC24h(sampleEnv);
       expect(defaultModeResult.standardMode).toBe('ABNT');
     });
+
+    it('deve suportar materiais customizados definidos no customCatalog', () => {
+      const envCustomMat: HVACEnvironment = {
+        ...sampleEnv,
+        customCatalog: {
+          paredes: [{ id: 'parede_super_isolada', name: 'Painel VIP 100mm', uFactor: 0.15, description: 'Super' }],
+          telhados: [{ id: 'telhado_super_isolado', name: 'Telhado EPS 200mm', uFactor: 0.20, description: 'Super' }],
+          vidros: [{ id: 'vidro_triplo_lowe', name: 'Vidro Triplo Low-E', uFactor: 1.1, description: 'Super' }]
+        },
+        roofType: 'telhado_super_isolado',
+        walls: [{ id: 1, area: 25, orientation: 'oeste', type: 'parede_super_isolada' }],
+        windows: [{ id: 1, area: 8, orientation: 'oeste', glassType: 'vidro_triplo_lowe', protection: 0.7 }]
+      };
+
+      const resultStandard = calculateHVAC24h(sampleEnv, 'ABNT');
+      const resultCustom = calculateHVAC24h(envCustomMat, 'ABNT');
+
+      // Com materiais de menor transmitância (uFactor menor), a carga de paredes, telhado e janelas deve ser menor
+      expect(resultCustom.breakdown.paredes).toBeLessThan(resultStandard.breakdown.paredes);
+      expect(resultCustom.breakdown.telhado).toBeLessThan(resultStandard.breakdown.telhado);
+    });
   });
 });

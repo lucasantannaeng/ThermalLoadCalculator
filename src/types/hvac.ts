@@ -5,22 +5,46 @@ export type RoofType =
   | 'laje_isolada' 
   | 'telha_fibro' 
   | 'telha_ceram_forro' 
-  | 'telhado_verde';
+  | 'telhado_verde'
+  | (string & {});
 
 export type WallType = 
   | 'alvenaria_leve' 
   | 'alvenaria_pesada' 
-  | 'drywall_isolado';
+  | 'drywall_isolado'
+  | (string & {});
 
 export type GlassType = 
   | 'simples' 
-  | 'duplo';
+  | 'duplo'
+  | (string & {});
 
 export type ActivityType = 
   | 'residencial' 
   | 'comercial_baixo' 
   | 'comercial_alto' 
-  | 'cozinha';
+  | 'cozinha'
+  | (string & {});
+
+export interface ActivityOption {
+  id: string;
+  name: string;
+  heatPerPersonWatts?: number;
+  sensibleRatio?: number;
+  metabolicRateW?: number;
+  sensibleFraction?: number;
+  latentFraction?: number;
+  wattsPerSqMeter?: number;
+  description: string;
+}
+
+export interface EquipmentPresetOption {
+  id: string;
+  name: string;
+  watts: number;
+  category?: string;
+  description?: string;
+}
 
 export interface Wall {
   id: string | number;
@@ -59,6 +83,7 @@ export interface HVACEnvironment {
   walls: Wall[];
   windows: Window[];
   equipment: Equipment[];
+  customCatalog?: MaterialCatalog;
 }
 
 export interface ProjectInfo {
@@ -126,4 +151,15 @@ export interface HVACResult24h extends HVACResult {
   peakHour: number;
   peakTotalBTU: number;
 }
+
+
+export interface EquipmentOption {
+  id: string;
+  name: string;
+  powerWatts: number;
+  heatDissipationFraction: number;
+  usageProfile: string;
+  description: string;
+}
+
 

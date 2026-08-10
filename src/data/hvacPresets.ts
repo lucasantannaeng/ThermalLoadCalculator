@@ -17,13 +17,13 @@ export interface BioclimaticZoneData {
 
 export const EXTENDED_ZONAS_BIOCLIMATICAS: BioclimaticZoneData[] = [
   { id: 1, nome: "Zona 1 (Frio / Sul)", cidades: ["Curitiba/PR", "Caxias do Sul/RS", "Lages/SC", "Ponta Grossa/PR"], deltaT: 8, umidadeRelativaMedia: 78 },
-  { id: 2, nome: "Zona 2 (Subtropical Ameno)", cidades: ["Rio de Janeiro/RJ", "Florianópolis/SC", "Porto Alegre/RS", "Santos/SP"], deltaT: 10, umidadeRelativaMedia: 75 },
+  { id: 2, nome: "Zona 2 (Subtropical Ameno)", cidades: ["Florianópolis/SC", "Porto Alegre/RS"], deltaT: 10, umidadeRelativaMedia: 75 },
   { id: 3, nome: "Zona 3 (Planalto Central Ameno)", cidades: ["São Paulo/SP", "Belo Horizonte/MG", "Campinas/SP", "Juiz de Fora/MG"], deltaT: 9, umidadeRelativaMedia: 70 },
   { id: 4, nome: "Zona 4 (Cerrado / Planalto)", cidades: ["Brasília/DF", "Goiânia/GO", "Montes Claros/MG", "Anápolis/GO"], deltaT: 10, umidadeRelativaMedia: 60 },
   { id: 5, nome: "Zona 5 (Quente e Seco / Centro-Oeste)", cidades: ["Cuiabá/MT", "Campo Grande/MS", "Corumbá/MS", "Rondonópolis/MT"], deltaT: 12, umidadeRelativaMedia: 55 },
-  { id: 6, nome: "Zona 6 (Nordeste Semiárido)", cidades: ["Salvador/BA", "Feira de Santana/BA", "Petrolina/PE", "Juazeiro do Norte/CE"], deltaT: 9, umidadeRelativaMedia: 65 },
-  { id: 7, nome: "Zona 7 (Norte/Nordeste Quente)", cidades: ["Teresina/PI", "Fortaleza/CE", "Natal/RN", "João Pessoa/PB", "Maceió/AL"], deltaT: 12, umidadeRelativaMedia: 70 },
-  { id: 8, nome: "Zona 8 (Equatorial Úmido)", cidades: ["Manaus/AM", "Belém/PA", "São Luís/MA", "Macapá/AP", "Porto Velho/RO", "Rio Branco/AC"], deltaT: 11, umidadeRelativaMedia: 85 },
+  { id: 6, nome: "Zona 6 (Nordeste Semiárido)", cidades: ["Feira de Santana/BA", "Petrolina/PE", "Juazeiro do Norte/CE"], deltaT: 9, umidadeRelativaMedia: 65 },
+  { id: 7, nome: "Zona 7 (Norte/Nordeste Quente)", cidades: ["Teresina/PI", "João Pessoa/PB"], deltaT: 12, umidadeRelativaMedia: 70 },
+  { id: 8, nome: "Zona 8 (Equatorial Úmido)", cidades: ["Manaus/AM", "Belém/PA", "São Luís/MA", "Macapá/AP", "Porto Velho/RO", "Rio Branco/AC", "Rio de Janeiro/RJ", "Santos/SP", "Salvador/BA", "Fortaleza/CE", "Natal/RN", "Maceió/AL"], deltaT: 11, umidadeRelativaMedia: 85 },
 ];
 
 export const PAREDE_MATERIAIS: Record<WallType, MaterialOption> = {
@@ -35,7 +35,7 @@ export const PAREDE_MATERIAIS: Record<WallType, MaterialOption> = {
 export const TELHADO_MATERIAIS: Record<RoofType, MaterialOption> = {
   laje_simples: { id: "laje_simples", name: "Laje de Concreto Simples (Sem Forro)", uFactor: 3.5, description: "Concreto armado sem isolamento adicional" },
   laje_isolada: { id: "laje_isolada", name: "Laje de Concreto com EPS / PIR Isolante", uFactor: 0.8, description: "Laje com camada de EPS de 50mm" },
-  telha_fibro: { id: "telha_fibro", name: "Telha de Fibrocimento Simples", uFactor: 7.0, description: "Alta transmitância térmica direta" },
+  telha_fibro: { id: "telha_fibro", name: "Telha de Fibrocimento Simples", uFactor: 4.5, description: "Alta transmitância térmica direta" },
   telha_ceram_forro: { id: "telha_ceram_forro", name: "Telha Cerâmica com Forro de Gesso / Madeira", uFactor: 2.5, description: "Cobertura residencial tradicional" },
   telhado_verde: { id: "telhado_verde", name: "Telhado Verde Extensivo (Vegetado)", uFactor: 1.5, description: "Camada de substrato vegetal com amortecimento de picos solares" },
 };

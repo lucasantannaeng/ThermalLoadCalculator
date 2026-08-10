@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -9,14 +9,67 @@ import {
   Legend, 
   CartesianGrid 
 } from 'recharts';
-import { Activity, Clock, Zap, TrendingUp, BarChart3 } from 'lucide-react';
+import { Activity, Clock, Zap, TrendingUp, BarChart3, ShieldCheck } from 'lucide-react';
 import { HourlyLoadBreakdown } from '../types/hvac';
 
 interface Simulation24hChartProps {
   data: HourlyLoadBreakdown[];
 }
 
-export const Simulation24hChart: React.FC<Simulation24hChartProps> = ({ data }) => {
+const formatYAxis = (val: number) => {
+  if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
+  if (val >= 1000) return `${(val / 1000).toFixed(0)}k`;
+  return `${val}`;
+};
+
+const CustomTooltip = React.memo(({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const totalHourly = payload.reduce((acc: number, entry: any) => acc + (Number(entry.value) || 0), 0);
+
+    return (
+      <div className="bg-slate-950/95 border border-cyan-500/40 p-3.5 rounded-xl shadow-2xl backdrop-blur-xl text-xs space-y-2 min-w-[220px]">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+          <span className="font-mono text-cyan-400 font-bold flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5" /> {String(label).padStart(2, '0')}:00h
+          </span>
+          <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 bg-cyan-950 text-cyan-300 rounded border border-cyan-800/50">
+            Ciclo 24h
+          </span>
+        </div>
+
+        <div className="space-y-1 py-1">
+          {payload.map((entry: any, index: number) => {
+            const val = Number(entry.value) || 0;
+            const pct = totalHourly > 0 ? ((val / totalHourly) * 100).toFixed(1) : '0';
+            return (
+              <div key={`item-${index}`} className="flex justify-between items-center text-[11px]">
+                <span className="flex items-center gap-2 text-slate-300">
+                  <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: entry.color }} />
+                  {entry.name}
+                </span>
+                <span className="font-mono text-slate-200 font-medium">
+                  {val.toLocaleString('pt-BR')} <span className="text-slate-500 text-[9px]">({pct}%)</span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="pt-2 border-t border-slate-800 flex justify-between items-center text-xs font-bold">
+          <span className="text-slate-400">Carga Acumulada:</span>
+          <span className="font-mono text-cyan-400 text-sm">
+            {totalHourly.toLocaleString('pt-BR')} <span className="text-[10px] text-cyan-600">BTU/h</span>
+          </span>
+        </div>
+      </div>
+    );
+  }
+  return null;
+});
+
+CustomTooltip.displayName = 'CustomTooltip';
+
+export const Simulation24hChart: React.FC<Simulation24hChartProps> = React.memo(({ data }) => {
   if (!data || data.length === 0) {
     return (
       <div className="w-full h-80 bg-slate-900/60 border border-slate-800/80 rounded-2xl flex items-center justify-center p-6 text-slate-400 font-mono text-xs">
@@ -49,69 +102,21 @@ export const Simulation24hChart: React.FC<Simulation24hChartProps> = ({ data }) 
     };
   }, [data]);
 
-  const formatYAxis = (val: number) => {
-    if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
-    if (val >= 1000) return `${(val / 1000).toFixed(0)}k`;
-    return `${val}`;
-  };
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const totalHourly = payload.reduce((acc: number, entry: any) => acc + (Number(entry.value) || 0), 0);
-
-      return (
-        <div className="bg-slate-950/95 border border-cyan-500/40 p-3.5 rounded-xl shadow-2xl backdrop-blur-xl text-xs space-y-2 min-w-[220px]">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-            <span className="font-mono text-cyan-400 font-bold flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5" /> {String(label).padStart(2, '0')}:00h
-            </span>
-            <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 bg-cyan-950 text-cyan-300 rounded border border-cyan-800/50">
-              Ciclo 24h
-            </span>
-          </div>
-
-          <div className="space-y-1 py-1">
-            {payload.map((entry: any, index: number) => {
-              const val = Number(entry.value) || 0;
-              const pct = totalHourly > 0 ? ((val / totalHourly) * 100).toFixed(1) : '0';
-              return (
-                <div key={`item-${index}`} className="flex justify-between items-center text-[11px]">
-                  <span className="flex items-center gap-2 text-slate-300">
-                    <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: entry.color }} />
-                    {entry.name}
-                  </span>
-                  <span className="font-mono text-slate-200 font-medium">
-                    {val.toLocaleString('pt-BR')} <span className="text-slate-500 text-[9px]">({pct}%)</span>
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="pt-2 border-t border-slate-800 flex justify-between items-center text-xs font-bold">
-            <span className="text-slate-400">Carga Acumulada:</span>
-            <span className="font-mono text-cyan-400 text-sm">
-              {totalHourly.toLocaleString('pt-BR')} <span className="text-[10px] text-cyan-600">BTU/h</span>
-            </span>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
-    <div className="w-full bg-slate-900/70 p-5 rounded-2xl border border-slate-800/80 shadow-2xl backdrop-blur-xl space-y-4">
+    <div className="w-full bg-slate-900/70 p-5 rounded-2xl border border-slate-800/80 shadow-2xl backdrop-blur-xl space-y-4 font-sans">
       {/* Header & Dynamic Telemetry Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
               <BarChart3 className="w-4 h-4" />
             </div>
             <h3 className="text-xs font-bold text-slate-100 uppercase tracking-widest">
               Perfil Térmico Dinâmico 24h
             </h3>
+            <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-slate-950 text-cyan-400 border border-cyan-800/80 rounded flex items-center gap-1">
+              <ShieldCheck className="w-3 h-3 text-cyan-400" /> STRIX AUDIT BADGE
+            </span>
           </div>
           <p className="text-[11px] text-slate-400 mt-1">
             Simulação contínua de ganho térmico acumulado (BTU/h) por componente ao longo do dia
@@ -264,4 +269,7 @@ export const Simulation24hChart: React.FC<Simulation24hChartProps> = ({ data }) 
       </div>
     </div>
   );
-};
+});
+
+Simulation24hChart.displayName = 'Simulation24hChart';
+

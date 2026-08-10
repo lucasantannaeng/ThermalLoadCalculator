@@ -3,7 +3,9 @@ import {
   HVACResult24h, 
   HourlyLoadBreakdown, 
   ThermalBreakdown,
-  Orientation 
+  Orientation,
+  MaterialCatalog,
+  MaterialOption
 } from '../../types/hvac';
 import { 
   EXTENDED_ZONAS_BIOCLIMATICAS, 
@@ -19,7 +21,7 @@ export const WATT_TO_BTU = 3.41214;
 export const CAPACIDADES_COMERCIAIS = [7500, 9000, 12000, 18000, 22000, 24000, 30000, 36000, 48000, 60000];
 
 export const CLTD_PAREDE: Record<Orientation, number> = { norte: 7, sul: 4, leste: 6, oeste: 14 };
-export const CARGA_PESSOA = { residencial: 115, comercial_baixo: 130, comercial_alto: 150, cozinha: 130 };
+export const CARGA_PESSOA: Record<string, number> = { residencial: 115, comercial_baixo: 130, comercial_alto: 150, cozinha: 130 };
 
 /**
  * Normalizes hourly ambient temperature profile scale (0.0 to 1.0) peaking around 14h-15h.
@@ -42,6 +44,33 @@ export const getEquipmentSuggestion = (totalBTU: number) => {
     : "Superior a 60.000 BTU/h (Sistema VRF / Chiller recomendado)";
   const potenciaEstimadaKW = Number(((totalBTU / 12000) * 1.1).toFixed(2));
   return { sugerida, potenciaEstimadaKW };
+};
+
+export const getWallUFactor = (type: string, catalog?: MaterialCatalog): number => {
+  if (catalog?.paredes) {
+    const custom = catalog.paredes.find(m => m.id === type);
+    if (custom) return custom.uFactor;
+  }
+  const preset = PAREDE_MATERIAIS[type as keyof typeof PAREDE_MATERIAIS];
+  return preset ? preset.uFactor : 2.9;
+};
+
+export const getRoofUFactor = (type: string, catalog?: MaterialCatalog): number => {
+  if (catalog?.telhados) {
+    const custom = catalog.telhados.find(m => m.id === type);
+    if (custom) return custom.uFactor;
+  }
+  const preset = TELHADO_MATERIAIS[type as keyof typeof TELHADO_MATERIAIS];
+  return preset ? preset.uFactor : 2.0;
+};
+
+export const getGlassUFactor = (type: string, catalog?: MaterialCatalog): number => {
+  if (catalog?.vidros) {
+    const custom = catalog.vidros.find(m => m.id === type);
+    if (custom) return custom.uFactor;
+  }
+  const preset = VIDRO_MATERIAIS[type as keyof typeof VIDRO_MATERIAIS];
+  return preset ? preset.uFactor : 5.7;
 };
 
 /**
@@ -85,8 +114,7 @@ export const calculateABNT24h = (env: HVACEnvironment): HVACResult24h => {
     // 5. Cobertura / Telhado
     let telhado = 0;
     if (env.hasRoof) {
-      const matObj = TELHADO_MATERIAIS[env.roofType];
-      const U = matObj ? matObj.uFactor : 2.0;
+      const U = getRoofUFactor(env.roofType, env.customCatalog);
       const roofSolarRad = getHourlySolarRadiation(hour, 'sul'); // ou equivalente zênite
       const cltdRoof = 5 + 15 * (tempFactor * 0.5 + (roofSolarRad / 250) * 0.5);
       const telhadoWatts = U * (env.roofArea || area) * cltdRoof;
@@ -97,8 +125,7 @@ export const calculateABNT24h = (env: HVACEnvironment): HVACResult24h => {
     const maxRadByOrient: Record<Orientation, number> = { leste: 350, oeste: 380, norte: 180, sul: 120 };
     let paredesWatts = 0;
     (env.walls || []).forEach(wall => {
-      const matObj = PAREDE_MATERIAIS[wall.type];
-      const U = matObj ? matObj.uFactor : 2.9;
+      const U = getWallUFactor(wall.type, env.customCatalog);
       const baseCLTD = CLTD_PAREDE[wall.orientation] || 8;
       const wallRad = getHourlySolarRadiation(hour, wall.orientation);
       const maxRad = maxRadByOrient[wall.orientation] || 250;
@@ -112,8 +139,7 @@ export const calculateABNT24h = (env: HVACEnvironment): HVACResult24h => {
     let janelasConducaoWatts = 0;
     let janelasSolarWatts = 0;
     (env.windows || []).forEach(win => {
-      const matObj = VIDRO_MATERIAIS[win.glassType];
-      const U = matObj ? matObj.uFactor : 5.7;
+      const U = getGlassUFactor(win.glassType, env.customCatalog);
       janelasConducaoWatts += U * (win.area || 0) * hourlyDeltaT;
       const winRad = getHourlySolarRadiation(hour, win.orientation);
       janelasSolarWatts += (win.area || 0) * winRad * (win.protection ?? 1.0);

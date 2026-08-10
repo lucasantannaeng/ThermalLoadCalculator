@@ -18,7 +18,10 @@ import {
   WATT_TO_BTU, 
   CARGA_PESSOA, 
   getHourlyAmbientTempFactor, 
-  getEquipmentSuggestion 
+  getEquipmentSuggestion,
+  getWallUFactor,
+  getRoofUFactor,
+  getGlassUFactor
 } from './abntEngine';
 
 /**
@@ -37,22 +40,19 @@ export const calculateISO24h = (env: HVACEnvironment): HVACResult24h => {
   // 1. Coeficiente de Transferência por Transmissão H_tr (W/K)
   let H_tr_paredes = 0;
   (env.walls || []).forEach(wall => {
-    const mat = PAREDE_MATERIAIS[wall.type];
-    const U = mat ? mat.uFactor : 2.9;
+    const U = getWallUFactor(wall.type, env.customCatalog);
     H_tr_paredes += U * (wall.area || 0);
   });
 
   let H_tr_janelas = 0;
   (env.windows || []).forEach(win => {
-    const mat = VIDRO_MATERIAIS[win.glassType];
-    const U = mat ? mat.uFactor : 5.7;
+    const U = getGlassUFactor(win.glassType, env.customCatalog);
     H_tr_janelas += U * (win.area || 0);
   });
 
   let H_tr_telhado = 0;
   if (env.hasRoof) {
-    const mat = TELHADO_MATERIAIS[env.roofType];
-    const U = mat ? mat.uFactor : 2.0;
+    const U = getRoofUFactor(env.roofType, env.customCatalog);
     H_tr_telhado += U * (env.roofArea || area);
   }
 

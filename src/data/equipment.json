@@ -1,0 +1,74 @@
+[
+  {
+    "id": "desktop_pc",
+    "name": "Computador Desktop com Monitor",
+    "powerWatts": 250,
+    "heatDissipationFraction": 0.90,
+    "usageProfile": "Comercial 8h",
+    "description": "Estação de trabalho típica de escritório composta por gabinete CPU e monitor LED."
+  },
+  {
+    "id": "notebook_dock",
+    "name": "Notebook com Docking Station e Monitor",
+    "powerWatts": 100,
+    "heatDissipationFraction": 0.85,
+    "usageProfile": "Comercial 8h",
+    "description": "Computador portátil corporativo conectado a fonte externa e monitor auxiliar."
+  },
+  {
+    "id": "servidor_rack",
+    "name": "Servidor de Dados em Rack (1U/2U)",
+    "powerWatts": 750,
+    "heatDissipationFraction": 0.98,
+    "usageProfile": "Continuo 24h",
+    "description": "Servidor de alta densidade em rack para processamento contínuo em sala de TI/Data Center."
+  },
+  {
+    "id": "impressora_laser",
+    "name": "Impressora Laser Multifuncional",
+    "powerWatts": 450,
+    "heatDissipationFraction": 0.70,
+    "usageProfile": "Intermitente",
+    "description": "Impressora departamental a laser com ciclos de aquecimento e impressão sob demanda."
+  },
+  {
+    "id": "televisor_led_65",
+    "name": "Televisor LED / Display 65\"",
+    "powerWatts": 180,
+    "heatDissipationFraction": 0.90,
+    "usageProfile": "Comercial 8h",
+    "description": "Display de alta resolução para apresentações em salas de reunião ou sinalização digital."
+  },
+  {
+    "id": "iluminacao_led_spot",
+    "name": "Painel de Iluminação LED Geral",
+    "powerWatts": 150,
+    "heatDissipationFraction": 1.00,
+    "usageProfile": "Comercial 12h",
+    "description": "Conjunto de luminárias LED de embutir para iluminação uniforme do ambiente."
+  },
+  {
+    "id": "projetor_multimidia",
+    "name": "Projetor Multimídia 4K",
+    "powerWatts": 320,
+    "heatDissipationFraction": 0.95,
+    "usageProfile": "Intermitente",
+    "description": "Projetor óptico de alta luminosidade instalado no teto para salas de conferência."
+  },
+  {
+    "id": "geladeira_comercial",
+    "name": "Geladeira Comercial Expositora",
+    "powerWatts": 500,
+    "heatDissipationFraction": 0.80,
+    "usageProfile": "Continuo 24h",
+    "description": "Equipamento refrigerado para conservação de bebidas e alimentos com exaustão de calor para o ambiente."
+  },
+  {
+    "id": "forno_microondas",
+    "name": "Forno Micro-ondas Industrial",
+    "powerWatts": 1200,
+    "heatDissipationFraction": 0.60,
+    "usageProfile": "Intermitente",
+    "description": "Equipamento de rápido aquecimento para copas, refeitórios e lanchonetes."
+  }
+]
