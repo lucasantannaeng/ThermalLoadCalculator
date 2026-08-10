@@ -1,6 +1,6 @@
-# Manual do Usuário — Calculadora e Simulação de Carga Térmica HVAC Pro (v3.6.0 Parametric CAD, Dynamic Databases & Interactive Vector Editor Edition)
+# Manual do Usuário — Calculadora e Simulação de Carga Térmica HVAC Pro (v3.7.0 Parametric CAD, Dynamic Databases & Interactive Vector Editor Edition)
 
-> **Versão do Sistema:** v3.6.0 Parametric CAD, Dynamic Databases & Interactive Vector Editor Edition  
+> **Versão do Sistema:** v3.7.0 Parametric CAD, Dynamic Databases & Interactive Vector Editor Edition  
 > **Normas de Referência:** ABNT NBR 16401-1 / NBR 15220 • ASHRAE RTS / CTF • ISO 52016-1  
 > **Documento:** Guia Técnico e Manual de Operação do Usuário  
 
