@@ -10,6 +10,9 @@
 
 **Thermal Load Calculator (HVAC Thermal Pro — v3.7.0 Parametric CAD, Dynamic Databases & Interactive Vector Editor Edition)** é a solução corporativa definitiva de engenharia térmica para dimensionamento computacional, simulação contínua de carga térmica em sistemas HVAC e manipulação vetorial paramétrica segundo as normas **ABNT NBR 16401**, **ABNT NBR 15220**, **ASHRAE RTS/CTF** e **ISO 52016-1**.
 
+> [!WARNING]
+> **AVISO DE DESENVOLVIMENTO / STATUS DE INTEGRAÇÃO:** Os módulos de Editor Vetorial CAD 2D e Visualização 3D ainda NÃO estão completamente integrados ao motor principal de cálculo. A integração paramétrica em tempo real entre o desenho 2D/3D e a simulação está em fase experimental de desenvolvimento.
+
 ---
 
 ## 🚀 Destaques da Versão v3.7.0 Parametric CAD, Dynamic Databases & Interactive Vector Editor Edition

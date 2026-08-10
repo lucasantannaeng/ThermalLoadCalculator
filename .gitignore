@@ -11,6 +11,7 @@ node_modules/
 # Build & Dist Outputs
 dist/
 release/
+release_builds/
 dist-ssr/
 build/
 out/

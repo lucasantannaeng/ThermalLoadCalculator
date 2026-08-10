@@ -4,6 +4,9 @@
 > **Normas de Referência:** ABNT NBR 16401-1 / NBR 15220 • ASHRAE RTS / CTF • ISO 52016-1  
 > **Documento:** Guia Técnico e Manual de Operação do Usuário  
 
+> [!WARNING]
+> **AVISO DE DESENVOLVIMENTO / STATUS DE INTEGRAÇÃO:** Os módulos de Editor Vetorial CAD 2D e Visualização 3D ainda NÃO estão completamente integrados ao motor principal de cálculo. A integração paramétrica em tempo real entre o desenho 2D/3D e a simulação está em fase experimental de desenvolvimento.
+
 ---
 
 ## 1. Visão Geral e Apresentação do Sistema
