@@ -47,16 +47,3 @@ npm run electron:dev
 # Compilação do executável desktop v3.7.0
 npm run electron:build
 ```
-
----
-
-## 📦 Distribuição e Executáveis Desktop
-
-Os executáveis standalone portáteis gerados pela compilação Electron encontram-se no diretório de release:
-- `release/ThermalLoadCalculator-v3.7.0.exe` e `release/ThermalLoadCalculator-Setup-v3.7.0.exe` *(Versão 3.7.0 Atual)*
-- `release/ThermalLoadCalculator-v3.6.0.exe` e `release/ThermalLoadCalculator-Setup-v3.6.0.exe` *(Build Preservada v3.6.0)*
-- `release/ThermalLoadCalculator-v3.5.0.exe` e `release/ThermalLoadCalculator-Setup-v3.5.0.exe` *(Build Preservada v3.5.0)*
-
----
-
-*Desenvolvido pela Equipe de Engenharia HVAC Thermal Pro — v3.7.0 Parametric CAD, Dynamic Databases & Interactive Vector Editor Edition.*
