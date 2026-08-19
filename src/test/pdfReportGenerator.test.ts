@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { generateHVACPDFReport } from '../services/pdfReportGenerator';
+import { describe, it, expect } from 'vitest';
+import { generateHVACPDFReport, sanitizePdfText } from '../services/pdfReportGenerator';
 import { ProjectInfo, HVACResult24h } from '../types/hvac';
 
 const mockProject: ProjectInfo = {
@@ -76,9 +76,56 @@ describe('pdfReportGenerator - Gerador de Laudos Técnicos', () => {
     expect(typeof generateHVACPDFReport).toBe('function');
   });
 
+  it('deve exportar a função auxiliar sanitizePdfText', () => {
+    expect(typeof sanitizePdfText).toBe('function');
+  });
+
+  it('deve sanitizar caracteres perigosos (<, >, &, \', ") e caracteres de controle', () => {
+    const raw = '<script>alert("XSS & injection")</script>\x00\x1b\t\n\'test\'';
+    const sanitized = sanitizePdfText(raw);
+    expect(sanitized).toBe('scriptalert(XSS  injection)/scripttest');
+    expect(sanitized).not.toContain('<');
+    expect(sanitized).not.toContain('>');
+    expect(sanitized).not.toContain('&');
+    expect(sanitized).not.toContain('"');
+    expect(sanitized).not.toContain("'");
+  });
+
+  it('deve retornar string vazia para entradas nulas, indefinidas ou não-string', () => {
+    expect(sanitizePdfText('')).toBe('');
+    expect(sanitizePdfText(null as any)).toBe('');
+    expect(sanitizePdfText(undefined as any)).toBe('');
+    expect(sanitizePdfText(123 as any)).toBe('');
+  });
+
+  it('deve preservar caracteres válidos e acentuação no sanitizePdfText', () => {
+    const valid = 'Edifício São Paulo - Área Técnica 100m²';
+    expect(sanitizePdfText(valid)).toBe(valid);
+  });
+
   it('deve gerar o laudo PDF completo sem erros para múltiplos ambientes', () => {
     expect(() => {
       generateHVACPDFReport(mockProject, mockResults);
+    }).not.toThrow();
+  });
+
+  it('deve sanitizar dados de usuário no laudo PDF com payloads maliciosos sem quebrar o fluxo', () => {
+    const maliciousProject: ProjectInfo = {
+      name: '<Company & Co "Test"> \x00\x1f',
+      client: "Client ' OR '1'='1' <tag>",
+      date: '2026-08-18\n\r'
+    };
+
+    const maliciousResults: HVACResult24h[] = [
+      {
+        ...mockResults[0],
+        name: '<b>Sala VIP & "Executive"</b>\x00',
+        sugerida: 'Chiller <Injection> & "AC" Unit'
+      }
+    ];
+
+    expect(() => {
+      generateHVACPDFReport(maliciousProject, maliciousResults);
     }).not.toThrow();
   });
 

@@ -2,6 +2,15 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ProjectInfo, HVACResult24h } from '../types/hvac';
 
+/**
+ * Sanitiza strings fornecidas pelo usuário para prevenir injeção em PDF e problemas de layout.
+ * Remove caracteres perigosos (<, >, &, ', ") e caracteres de controle (ASCII 0x00-0x1F e 0x7F-0x9F).
+ */
+export const sanitizePdfText = (str: string): string => {
+  if (!str || typeof str !== 'string') return '';
+  return str.replace(/[<>&'"\x00-\x1F\x7F-\x9F]/g, '');
+};
+
 export const generateHVACPDFReport = (project: ProjectInfo, results: HVACResult24h[]): void => {
   const doc = new jsPDF();
 
@@ -60,9 +69,9 @@ export const generateHVACPDFReport = (project: ProjectInfo, results: HVACResult2
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
-  doc.text(`Projeto: ${project.name || 'Sem nome'}`, 18, currentY + 15);
-  doc.text(`Cliente: ${project.client || 'Não informado'}`, 18, currentY + 22);
-  doc.text(`Data de Emissão: ${project.date || new Date().toLocaleDateString('pt-BR')}`, 18, currentY + 29);
+  doc.text(`Projeto: ${sanitizePdfText(project.name) || 'Sem nome'}`, 18, currentY + 15);
+  doc.text(`Cliente: ${sanitizePdfText(project.client) || 'Não informado'}`, 18, currentY + 22);
+  doc.text(`Data de Emissão: ${sanitizePdfText(project.date) || new Date().toLocaleDateString('pt-BR')}`, 18, currentY + 29);
 
   doc.text(`Ambientes Analisados: ${results.length}`, 115, currentY + 15);
   doc.text(`Carga Total: ${totalProjectBTU.toLocaleString('pt-BR')} BTU/h (${totalTR} TR)`, 115, currentY + 22);
@@ -93,12 +102,12 @@ export const generateHVACPDFReport = (project: ProjectInfo, results: HVACResult2
   currentY += 4;
 
   const tableData = results.map(r => [
-    r.name,
-    r.standardMode || 'ABNT',
+    sanitizePdfText(r.name),
+    sanitizePdfText(r.standardMode) || 'ABNT',
     `${r.total.toLocaleString('pt-BR')} BTU/h`,
     `${(r.total / 12000).toFixed(2)} TR`,
     `Pico às ${r.peakHour}:00h`,
-    r.sugerida
+    sanitizePdfText(r.sugerida)
   ]);
 
   autoTable(doc, {
@@ -149,7 +158,7 @@ export const generateHVACPDFReport = (project: ProjectInfo, results: HVACResult2
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Ambiente ${idx + 1}: ${r.name}  [Norma: ${r.standardMode}]`, 18, currentY + 5.5);
+    doc.text(`Ambiente ${idx + 1}: ${sanitizePdfText(r.name)}  [Norma: ${sanitizePdfText(r.standardMode)}]`, 18, currentY + 5.5);
     currentY += 12;
 
     const b = r.breakdown;
@@ -296,7 +305,7 @@ export const generateHVACPDFReport = (project: ProjectInfo, results: HVACResult2
   }
 
   // 7. Save PDF File
-  const safeProjectName = (project.name || 'Projeto_HVAC').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const safeProjectName = (sanitizePdfText(project.name) || 'Projeto_HVAC').replace(/[^a-zA-Z0-9_-]/g, '_');
   doc.save(`Laudo_HVAC_${safeProjectName}.pdf`);
 };
 
