@@ -1,6 +1,6 @@
 {
   "name": "thermal-load-calculator",
-  "version": "3.7.0",
+  "version": "3.7.1",
   "license": "MIT",
   "author": "Luca Rodrigues Gomes de Sant'Anna <lucasantannaeng@gmail.com>",
   "type": "module",
