@@ -53,11 +53,14 @@ credentials.json
 service-account*.json
 
 # Desktop Application Compilations & Builds (Electron / Tauri / PyInstaller)
+electron/
 release/
 release_builds/
 dist-electron/
 win-unpacked/
 mac/
+*.pdf
+docs/pdf_references/
 linux/
 *.builder.cache/
 *.exe
