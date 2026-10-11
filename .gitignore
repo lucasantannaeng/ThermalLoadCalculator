@@ -53,11 +53,9 @@ credentials.json
 service-account*.json
 
 # Desktop Application Compilations & Builds (Electron / Tauri / PyInstaller)
-electron/
 release/
 release_builds/
-dist-electron/
-win-unpacked/
+dist-win-unpacked/
 mac/
 *.pdf
 docs/pdf_references/
@@ -144,8 +142,7 @@ linux/
 release/
 release_builds/
 dist-release/
-dist-electron/
-
+dist-
 # --- Build Outputs, Bundles & Distribution ---
 dist/
 dist-*/

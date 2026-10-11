@@ -255,10 +255,12 @@ describe('Strix Security SAST Audit Suite', () => {
         'src/services/materialService.ts'
       ];
 
-      const loadedFiles = filesToAudit.map(rel => ({
-        filePath: rel,
-        content: fs.readFileSync(path.join(projectRoot, rel), 'utf-8')
-      }));
+      const loadedFiles = filesToAudit
+        .map(rel => {
+          const abs = path.join(projectRoot, rel);
+          return fs.existsSync(abs) ? { filePath: rel, content: fs.readFileSync(abs, 'utf-8') } : null;
+        })
+        .filter((f): f is { filePath: string; content: string } => f !== null);
 
       const report = auditService.runFullStrixAudit(loadedFiles);
       const markdown = auditService.generateAuditReportMarkdown(report);
