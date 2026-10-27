@@ -241,3 +241,5 @@ pnpm-debug.log*
 *.7z
 *.tar.gz
 *.rar
+
+.codebase-memory/

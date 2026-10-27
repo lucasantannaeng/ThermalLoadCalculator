@@ -35,6 +35,7 @@ import {
 import { HvacCadViewer } from './HvacCadViewer';
 import { CadImportModal } from './CadImportModal';
 import { HvacVectorCanvasEditor } from './HvacVectorCanvasEditor';
+import CopyrightReportModal from './CopyrightReportModal';
 import { 
   HVACEnvironment, 
   ProjectInfo, 
@@ -78,6 +79,7 @@ export const ThermalLoadCalculator: React.FC = React.memo(() => {
   const [isEquipmentModalOpen, setIsEquipmentModalOpen] = useState<boolean>(false);
   const [isCadImportModalOpen, setIsCadImportModalOpen] = useState<boolean>(false);
   const [isAiKeyModalOpen, setIsAiKeyModalOpen] = useState<boolean>(false);
+  const [isCopyrightReportModalOpen, setIsCopyrightReportModalOpen] = useState<boolean>(false);
 
   // Catalogs State
   const [activityOptions, setActivityOptions] = useState<ActivityOption[]>([]);
@@ -186,6 +188,15 @@ export const ThermalLoadCalculator: React.FC = React.memo(() => {
     localStorage.setItem('hvac_environments', JSON.stringify(environments));
     defaultParametricCadSyncService.batchUpdateEnvironments(environments, 'system');
   }, [environments]);
+  // Copyright Report Modal Listener
+  useEffect(() => {
+    const { off } = (window as any).electronAPI?.onShowCopyrightReport(() => {
+      setIsCopyrightReportModalOpen(true);
+    }) ?? {};
+    return () => {
+      off?.();
+    };
+  }, []);
 
   const addEnvironment = useCallback(() => {
     const newEnv: HVACEnvironment = {
@@ -1227,6 +1238,24 @@ export const ThermalLoadCalculator: React.FC = React.memo(() => {
           isOpen={isAiKeyModalOpen}
           onClose={() => setIsAiKeyModalOpen(false)}
           onKeysUpdated={() => showNotify('success', 'Chaves e Provedores de IA atualizados com sucesso.')}
+        />
+        <CopyrightReportModal
+          isOpen={isCopyrightReportModalOpen}
+          onClose={() => setIsCopyrightReportModalOpen(false)}
+          onSubmit={async (report: {
+            url: string;
+            titularity: string;
+            proof: string;
+            contact: string;
+          }) => {
+            const result = await (window as any).electronAPI.saveCopyrightReport(report);
+            if (!result.success) {
+              showNotify("error", result.error ?? "Failed to save copyright report.");
+            } else {
+              showNotify("success", "Copyright report saved successfully.");
+            }
+            return result;
+          }}
         />
 
       </div>
